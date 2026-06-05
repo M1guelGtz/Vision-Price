@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: visionprice-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # Variables que el script init/01-create-databases.sh leera para
+      # crear las dos bases y los dos usuarios.
+      AUTH_DB_NAME: ${AUTH_DB_NAME}
+      AUTH_DB_USER: ${AUTH_DB_USER}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD}
+      PROJECTS_DB_NAME: ${PROJECTS_DB_NAME}
+      PROJECTS_DB_USER: ${PROJECTS_DB_USER}
+      PROJECTS_DB_PASSWORD: ${PROJECTS_DB_PASSWORD}
+    ports:
+      # Bind to 127.0.0.1 ONLY. Los backends correran en la misma EC2 y
+      # se conectaran a 127.0.0.1:3306. Para acceder desde tu maquina local
+      # usa un tunel SSH (ver guia abajo). NUNCA expongas 3306 a internet.
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Scripts de inicializacion (solo se ejecutan la primera vez que el
+      # volumen mysql_data esta vacio). Crean ambas bases y usuarios.
+      - ./init:/docker-entrypoint-initdb.d:ro
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-buffer-pool-size=256M
+      - --max-connections=100
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  mysql_data:
+    name: visionprice_mysql_data

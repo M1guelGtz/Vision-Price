@@ -1,0 +1,695 @@
+\documentclass[12pt, a4paper]{article} % Clase de documento: 'article' es estándar para trabajos cortos. 12pt es el tamaño de letra. A4 es el formato de papel.
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc} % Para la codificación de caracteres, esencial para acentos y eñes
+\usepackage[T1]{fontenc}    % Fuente moderna para PDFs
+\usepackage[spanish]{babel} % Soporte para idioma español (guionización, fechas, etc.)
+\usepackage{amsmath}        % Para matemáticas avanzadas (si fuera necesario)
+\usepackage{graphicx}       % Para insertar imágenes
+\usepackage{booktabs}       % Mejora el aspecto de las tablas (líneas más profesionales)
+\usepackage{geometry}       % Para configurar los márgenes
+\usepackage{hyperref}       % Para crear enlaces en el índice y referencias (¡muy recomendado!)
+\usepackage{fancyhdr}       % Para personalizar encabezados y pies de página (opcional)
+\usepackage[spanish]{babel}
+% ¡Asegúrate de que xcolor esté aquí!
+\usepackage[table]{xcolor} % 'table' es útil para compatibilidad con listings/tablas
+\usepackage{listings}       % Paquete para el formato de código fuente
+% --- MODIFICACIÓN DE LA ETIQUETA 'LISTING' A 'LISTADO' ---
+\addto{\captionsspanish}{\renewcommand{\lstlistingname}{Listado}}
+\addto{\captionsspanish}{\renewcommand{\lstlistlistingname}{Listado de Códigos}}
+% --- DEFINICIÓN DE COLOR GRIS Y ESTILO DE CÓDIGO ---
+
+% Definimos un color gris claro para el fondo (usando el modelo RGB)
+% Los valores entre 0 y 1. (0.95, 0.95, 0.95 es un gris muy claro)
+\definecolor{GrisClaro}{rgb}{0.95, 0.95, 0.95}
+
+% Configuramos el estilo por defecto para todos los bloques de código (lstlisting)
+\lstset{
+    language=TeX, % Lenguaje por defecto (puedes cambiarlo, ej: Python, C, Java)
+    backgroundcolor=\color{GrisClaro}, % Fondo gris claro
+    basicstyle=\ttfamily\small,      % Tipo de fuente: typewriter (\ttfamily) y pequeño (\small)
+    breaklines=true,                 % Permite saltos de línea largos
+    showstringspaces=false,          % No mostrar espacios como caracteres
+    numbers=left,                    % Numeración de líneas a la izquierda
+    numberstyle=\tiny\color{gray},   % Estilo del número de línea
+    frame=single,                    % Dibuja un marco alrededor del código
+    framesep=5pt,                    % Espacio entre el marco y el código
+    rulesepcolor=\color{black},      % Color de las líneas del marco
+    keywordstyle=\color{blue}\bfseries, % Palabras clave en azul y negrita
+    commentstyle=\color{green!60!black}\itshape, % Comentarios en verde oscuro y cursiva
+    stringstyle=\color{orange},      % Cadenas de texto en naranja
+}
+
+% --- LENGUAJES PERSONALIZADOS PARA listings (Dart, Kotlin) ---
+\lstdefinelanguage{Dart}{
+    keywords={import, class, abstract, static, final, const, void, return, if, else, async, await, Future, bool, String, int, double, true, false, null, this, super, extends, new, try, catch, on, in, is, as, override, enum, switch, case, default, late, factory, required, with, implements, mixin},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={Widget, State, StatefulWidget, StatelessWidget, BuildContext, MaterialApp, ChangeNotifier, Provider, ChangeNotifierProvider, Consumer, MultiProvider, Scaffold, AppBar, Column, Row, Container, Text, Icon, GestureDetector, ApiClient, AuthRepository, LoginViewModel},
+    ndkeywordstyle=\color{purple}\bfseries,
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]',
+}
+\lstdefinelanguage{Kotlin}{
+    keywords={package, import, fun, override, val, var, when, class, return, super, private, public, internal, object, this, if, else, true, false, null, in, is, as},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={String, Int, Boolean, Unit, Bundle, MethodChannel, FlutterFragmentActivity, FlutterEngine, WindowManager},
+    ndkeywordstyle=\color{purple}\bfseries,
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]',
+}
+
+% --- CONFIGURACIÓN DE MARGENES ---
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=25mm,
+ right=25mm,
+ top=30mm,
+ bottom=30mm,
+ }
+
+% --- CONFIGURACIÓN DE ENCABEZADOS Y PIES (OPCIONAL) ---
+\pagestyle{fancy}
+\fancyhf{} % Limpiar encabezados y pies
+\renewcommand{\headrulewidth}{0pt} % Eliminar línea en el encabezado
+\rfoot{\thepage} % Número de página a la derecha en el pie
+\lfoot{ Desarrollo de Aplicaciones Móviles con Flutter / Miguel Ángel Gutiérrez Gómez} % Texto en el pie de página izquierdo
+
+% --- DATOS DEL DOCUMENTO (PARA LA PORTADA) ---
+\newcommand{\nombreuniversidad}{Universidad Politécnica de Chiapas}
+\newcommand{\nombrecarrera}{Ingeniería en Software}
+\newcommand{\nombremateria}{Desarrollo de Aplicaciones Móviles con Flutter}
+\newcommand{\nombreprofesor}{MC. José Alonso Macías Montoya}
+\newcommand{\corte}{Corte 1}
+\newcommand{\actividad}{Aplicación Transaccional - VisionPrice}
+\newcommand{\nombres}{Miguel Ángel Gutiérrez Gómez}
+\newcommand{\matricula}{233382}
+\newcommand{\fechaentrega}{\today} % \today inserta la fecha actual automáticamente
+\newcommand{\ciudad}{Suchiapa, Chiapas}
+
+\usepackage[utf8]{inputenc} % ¡ESTA LÍNEA ES FUNDAMENTAL!
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+% --- INICIO DEL DOCUMENTO ---
+\begin{document}
+
+% --- PORTADA ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm} % Espacio vertical
+    {\Huge\bfseries \nombreuniversidad \par} % Título principal: Nombre de la Universidad
+    \vspace{0.5cm}
+    {\Large \nombrecarrera \par} % Nombre de la Carrera
+
+    \vspace{2cm}
+    \rule{\textwidth}{1.5pt} % Línea gruesa
+    \vspace{0.4cm}
+    {\Large\bfseries \actividad \par} % Título del Trabajo
+    \vspace{0.4cm}
+    \rule{\textwidth}{1.5pt} % Línea gruesa
+
+    \vspace{3cm}
+
+    % --- DATOS DEL ALUMNO Y CURSO (EN UNA SOLA COLUMNA) ---
+    % Se eliminaron los entornos minipage y \hfill
+    \begin{flushleft}
+        \centering % Centra las líneas dentro del entorno flushleft
+        \textbf{Materia:} \nombremateria \\
+        \textbf{Profesor:} \nombreprofesor \\
+        \textbf{Corte:} \corte
+    \end{flushleft}
+
+    \vspace{0.5cm} % Pequeño espacio de separación
+
+    \begin{flushleft}
+        \centering % Centra las líneas dentro del entorno flushleft
+        \textbf{Alumno:} \nombres \\
+        \textbf{Matrícula:} \matricula \\
+    \end{flushleft}
+    % --- FIN DE DATOS EN UNA SOLA COLUMNA ---
+
+    \vfill % Empuja el contenido restante al final de la página
+
+    % Fecha y Ciudad
+    \vspace{1cm}
+    \textbf{\ciudad, a \fechaentrega}
+
+\end{titlepage}
+
+\clearpage % Salto de página para empezar el contenido
+
+% --- ÍNDICE/TABLA DE CONTENIDO ---
+% Se recomienda usar la instrucción \tableofcontents inmediatamente después de la portada.
+% LaTeX genera automáticamente el índice a partir de las secciones (\section, \subsection, etc.)
+\tableofcontents
+\clearpage
+
+% --- CUERPO DEL TRABAJO ---
+
+\section{Introducción}
+\label{sec:introduccion}
+VisionPrice es una aplicación móvil \textbf{transaccional} construida con
+Flutter cuyo objetivo es gestionar de forma profesional los presupuestos
+de proyectos de construcción y remodelación. La app permite a un
+contratista (o vendedor de materiales) iniciar sesión de forma segura,
+crear nuevos proyectos asignándoles cliente, ciudad y tipo de trabajo
+(piso, pared, techo o combinado), consultar, editar y eliminar los ya
+existentes, y revisar las métricas agregadas (proyectos activos, en
+cotización) desde un dashboard.
+
+El propósito de este trabajo es documentar la arquitectura y los
+patrones aplicados en la construcción de la aplicación, demostrando que
+cumple con los requisitos académicos planteados en la rúbrica
+\textit{App Transaccional}: \textbf{Arquitectura} (MVVM + Clean +
+Screaming + Vertical Slicing), \textbf{Gestión de estado} con Provider,
+\textbf{Cliente HTTP} con verbos GET/POST/PUT/DELETE, \textbf{Interfaz
+gráfica} basada en Material Theme 3.0 y Atomic Design, y consumo de una
+\textbf{API RESTful} dividida en dos microservicios (auth y projects).
+
+\section{Recursos Utilizados}
+\label{sec:recursos}
+En esta sección se listan las herramientas, librerías y servicios
+fundamentales para la realización de la actividad.
+
+\begin{itemize}
+    \item \textbf{Lenguaje y SDK:} Dart 3.12 y Flutter 3.44 para el
+    cliente móvil; Node.js 20 + TypeScript 5 para el backend.
+    \item \textbf{Librerías Flutter:} \texttt{provider} (gestión de
+    estado), \texttt{http} (cliente REST),
+    \texttt{flutter\_secure\_storage} (Keystore/Keychain),
+    \texttt{google\_sign\_in} 7.x (login federado),
+    \texttt{local\_auth} 3.x (huella / Face ID),
+    \texttt{geolocator} (detección de Fake GPS).
+    \item \textbf{Backend:} Fastify 4, Prisma 5, MySQL 8 en
+    contenedores Docker, JWT (\texttt{jsonwebtoken}), bcrypt, Zod.
+    \item \textbf{Herramientas:} Android Studio, VS Code, Postman,
+    Docker Desktop, Git, Overleaf y compilador \LaTeX{}.
+    \item \textbf{Diseño:} Material Theme 3.0, prototipo VisionPrice
+    (HTML standalone) y guía de estilo Atomic Design.
+\end{itemize}
+
+\section{Desarrollo}
+\label{sec:desarrollo}
+Esta sección describe la metodología, la arquitectura, el manejo de
+estado, el cliente HTTP y la interfaz gráfica de la aplicación.
+
+\subsection{Arquitectura}
+\label{sec:arquitectura}
+La aplicación combina cuatro principios complementarios.
+
+\subsubsection{Clean Architecture}
+La capa de dominio (entidades, value objects, repositorios abstractos y
+casos de uso) es \textbf{independiente} de cualquier framework. Toda
+dependencia apunta hacia adentro: \texttt{presentation} depende de
+\texttt{domain}, \texttt{data} depende de \texttt{domain}, y
+\texttt{domain} no depende de nadie.
+
+\subsubsection{Screaming Architecture}
+Al abrir el árbol del proyecto, la estructura \textit{grita} lo que hace
+la aplicación, no la tecnología empleada. Las carpetas de primer nivel
+son \texttt{auth} y \texttt{projects}, no \texttt{controllers} ni
+\texttt{models}.
+
+\subsubsection{Vertical Slicing}
+Cada feature contiene \textbf{toda} su pila: \texttt{data},
+\texttt{domain}, \texttt{presentation} y \texttt{di}. Esto desacopla
+features entre sí y permite trabajar en uno sin afectar al resto.
+
+\subsubsection{MVVM}
+Cada pantalla tiene un \texttt{ViewModel} (\texttt{ChangeNotifier}) con
+un \texttt{State} inmutable. La \texttt{View} solo construye widgets y
+reacciona a cambios; las acciones del usuario llaman métodos del
+ViewModel, que invoca los casos de uso del dominio.
+
+\begin{lstlisting}[language={}, caption={Estructura de carpetas (Screaming + Vertical Slicing)}]
+lib/
+  core/                  (UI compartida + utilidades transversales)
+  features/
+    auth/                (slice vertical: autenticacion)
+      data/
+        datasources/{remote,local}/
+        local/
+        mappers/
+        repositories/
+      domain/
+        entities/
+        value_objects/
+        services/        (ports: BiometricAuthenticator, CredentialsVault)
+        repositories/    (port: AuthRepository)
+        use_cases/
+      presentation/
+        pages/
+        view_models/
+      di/auth_module.dart
+    projects/            (slice vertical: proyectos)
+      data/ domain/ presentation/ di/
+\end{lstlisting}
+
+\begin{lstlisting}[language=Dart, caption={ViewModel MVVM con estado inmutable}]
+class LoginViewModel extends ChangeNotifier {
+  final LoginWithPassword _loginWithPassword;
+  LoginState _state = const LoginState();
+  LoginState get state => _state;
+
+  Future<bool> loginWithPassword({
+    required String email,
+    required String password,
+  }) async {
+    if (_state.isBusy) return false;
+    _set(_state.copyWith(isSubmitting: true, errorMessage: null));
+    try {
+      await _loginWithPassword(email: email, password: password);
+      return true;
+    } on ApiException catch (e) {
+      _set(_state.copyWith(errorMessage: e.message));
+      return false;
+    } finally {
+      _set(_state.copyWith(isSubmitting: false));
+    }
+  }
+
+  void _set(LoginState next) { _state = next; notifyListeners(); }
+}
+\end{lstlisting}
+
+\subsection{Gestión de Estado con Provider}
+\label{sec:provider}
+La aplicación utiliza la librería \texttt{provider} con dos niveles de
+provisión:
+
+\begin{itemize}
+    \item \textbf{Nivel global:} los módulos
+    (\texttt{AuthModule}, \texttt{ProjectsModule}) son singletons
+    inyectados con \texttt{Provider.value} en el composition root. Las
+    páginas los leen con \texttt{context.read<AuthModule>()}.
+    \item \textbf{Nivel por página:} cada \texttt{Page} envuelve su
+    árbol en un \texttt{ChangeNotifierProvider} que construye su
+    ViewModel con la factoría del módulo, garantizando una instancia
+    fresca por pantalla y evitando fugas de estado entre
+    navegaciones.
+\end{itemize}
+
+\begin{lstlisting}[language=Dart, caption={Composition root global con MultiProvider}]
+return MultiProvider(
+  providers: [
+    Provider<AuthModule>.value(value: _authModule),
+    Provider<ProjectsModule>.value(value: _projectsModule),
+  ],
+  child: MaterialApp(
+    title: 'VisionPrice',
+    theme: AppTheme.light(),
+    initialRoute: Routes.integrityGate,
+    routes: {
+      Routes.login:         (_) => const LoginPage(),
+      Routes.register:      (_) => const RegisterPage(),
+      Routes.projects:      (_) => const DashboardPage(),
+      Routes.addProject:    (_) => const AddProjectPage(),
+      Routes.editProject:   (_) => const EditProjectPage(),
+      Routes.projectDetail: (_) => const ProjectDetailPage(),
+    },
+  ),
+);
+\end{lstlisting}
+
+\begin{lstlisting}[language=Dart, caption={ChangeNotifierProvider + Consumer en la página}]
+class LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final module = context.read<AuthModule>();
+    return ChangeNotifierProvider<LoginViewModel>(
+      create: (_) => module.loginViewModelFactory(),
+      child: const _LoginView(),
+    );
+  }
+}
+
+return Consumer<LoginViewModel>(
+  builder: (context, vm, _) {
+    final state = vm.state;
+    return PrimaryButton(
+      label: 'Continuar',
+      loading: state.isSubmitting,
+      onPressed: state.isBusy ? null : () => _onContinue(vm),
+    );
+  },
+);
+\end{lstlisting}
+
+\subsection{Cliente HTTP}
+\label{sec:http}
+La aplicación utiliza el paquete oficial \texttt{http}. Internamente se
+construyó un wrapper \texttt{ApiClient} que centraliza la URL base, los
+headers JSON, el header \texttt{Authorization: Bearer <token>}, el
+timeout y la decodificación de errores. A continuación se muestran
+ejemplos reales de los cuatro verbos REST consumidos por la app.
+
+\begin{lstlisting}[language=Dart, caption={GET /projects: listar proyectos}]
+Future<List<ProjectDto>> list({String? status}) async {
+  final token = await _requireToken();
+  final query = status == null ? '' : '?status=$status';
+  final json = await _apiClient.getJson(
+    '/projects$query',
+    accessToken: token,
+  );
+  final raw = (json['projects'] as List<dynamic>?) ?? const [];
+  return raw
+      .map((e) => ProjectDto.fromJson(e as Map<String, dynamic>))
+      .toList(growable: false);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Dart, caption={POST /auth/login: iniciar sesión}]
+Future<AuthResponseDto> loginWithPassword({
+  required String email,
+  required String password,
+}) async {
+  final json = await _apiClient.postJson('/auth/login', {
+    'email': email,
+    'password': password,
+  });
+  return AuthResponseDto.fromJson(json);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Dart, caption={PUT/PATCH /projects/:id: actualizar proyecto}]
+Future<ProjectDto> update(String id, Map<String, dynamic> changes) async {
+  final token = await _requireToken();
+  final res = await _apiClient.patch('/projects/$id', changes,
+      accessToken: token);
+  if (res.statusCode < 200 || res.statusCode >= 300) {
+    throw _apiClient.decodeError(res);
+  }
+  final body = _apiClient.decodeJson(res);
+  return ProjectDto.fromJson(body['project'] as Map<String, dynamic>);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Dart, caption={DELETE /projects/:id: eliminar proyecto}]
+Future<void> delete(String id) async {
+  final token = await _requireToken();
+  final res = await _apiClient.deleteRaw('/projects/$id',
+      accessToken: token);
+  if (res.statusCode == 204 || res.statusCode == 200) return;
+  throw _apiClient.decodeError(res);
+}
+\end{lstlisting}
+
+\subsection{Interfaz Gráfica}
+\label{sec:ui}
+Toda la app comparte un \texttt{AppTheme} con \texttt{useMaterial3: true},
+paleta consistente, tipografía, botones, inputs y checkboxes
+unificados. La capa \texttt{core/ui} sigue \textbf{Atomic Design}:
+\textit{atoms} (botones, etiquetas, iconos), \textit{molecules} (campos
+con label, password con toggle, city picker) y \textit{organisms}
+(brand header, social auth buttons).
+
+Los widgets más representativos usados a lo largo de la app incluyen:
+\texttt{Scaffold}, \texttt{AppBar}, \texttt{SafeArea},
+\texttt{SingleChildScrollView}, \texttt{Column}, \texttt{Row},
+\texttt{Form}, \texttt{TextFormField}, \texttt{GridView.builder},
+\texttt{ChoiceChip}, \texttt{FloatingActionButton},
+\texttt{AlertDialog}, \texttt{SnackBar}, \texttt{Consumer},
+\texttt{ChangeNotifierProvider}, además de los átomos y moléculas
+propios del proyecto.
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][6cm][c]{0.55\textwidth}{\centering \textit{Pantalla de Login (email/password, Google y Face ID)}}}
+    \caption{Pantalla de Login}
+    \label{fig:login}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][6cm][c]{0.55\textwidth}{\centering \textit{Pantalla de Registro}}}
+    \caption{Pantalla de Registro}
+    \label{fig:register}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][6cm][c]{0.55\textwidth}{\centering \textit{Dashboard con KPIs y lista de proyectos}}}
+    \caption{Dashboard principal}
+    \label{fig:dashboard}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][6cm][c]{0.55\textwidth}{\centering \textit{Nuevo proyecto: pasos numerados + grid 2x2}}}
+    \caption{Formulario de creación de proyecto}
+    \label{fig:add-project}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][6cm][c]{0.55\textwidth}{\centering \textit{Detalle del proyecto con editar/eliminar}}}
+    \caption{Detalle de proyecto}
+    \label{fig:detail}
+\end{figure}
+
+\subsection{Endpoints REST consumidos}
+La aplicación consume los endpoints REST resumidos en la
+Tabla \ref{tab:endpoints}.
+
+\begin{table}[h]
+    \centering
+    \caption{Endpoints REST consumidos por la aplicación}
+    \label{tab:endpoints}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Método} & \textbf{Ruta} & \textbf{Auth} & \textbf{Propósito} \\
+        \midrule
+        POST   & /auth/register     & público & Crear cuenta \\
+        POST   & /auth/login        & público & Iniciar sesión \\
+        POST   & /auth/google/token & público & Login Google idToken \\
+        POST   & /auth/refresh      & público & Rotar tokens \\
+        POST   & /auth/logout       & Bearer  & Revocar sesión \\
+        GET    & /auth/me           & Bearer  & Perfil actual \\
+        GET    & /projects          & Bearer  & Listar proyectos \\
+        POST   & /projects          & Bearer  & Crear proyecto \\
+        GET    & /projects/:id      & Bearer  & Detalle proyecto \\
+        PATCH  & /projects/:id      & Bearer  & Actualizar proyecto \\
+        DELETE & /projects/:id      & Bearer  & Eliminar proyecto \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.5em}
+    \footnotesize Nota: PATCH se utiliza en lugar de PUT para permitir actualizaciones parciales del recurso.
+\end{table}
+
+\subsection{Prompts Utilizados}
+\label{sec:prompts}
+A continuación se presentan los cinco prompts más representativos
+utilizados con un asistente LLM (Claude) durante el desarrollo. Cada
+respuesta del asistente fue revisada, modificada e integrada con
+criterio propio; el asistente actuó como \textit{pair programmer},
+nunca como autor único.
+
+\subsubsection{Prompt 1 — Backend con arquitectura hexagonal}
+\textit{``Scaffold a production-ready authentication microservice using
+Node.js + TypeScript + Fastify following strict Hexagonal Architecture
+(Ports \& Adapters) combined with Clean Architecture: domain (entities
+without ORM, value objects, repository ports, errors), application
+(use cases, DTOs), infrastructure (Prisma, JWT, Google), interfaces
+(HTTP). Manual DI in main.ts. Env vars validated with Zod''.}
+
+Resultado: \texttt{auth-service} completo con 6 endpoints y arquitectura
+hexagonal estricta.
+
+\subsubsection{Prompt 2 — Frontend con Clean + MVVM + Atomic Design}
+\textit{``Adaptar lo que tengo de Flutter al estilo Clean Architecture +
+MVVM + Repository + Atomic Design, con todas las mejoras recomendadas:
+atomic design completo, sin código duplicado entre features, value
+objects en domain, repository real con use cases, sin fugas de
+dependencia. State management con ChangeNotifier + Provider. DI
+manual''.}
+
+Resultado: reorganización completa del frontend en \texttt{core/} y
+\texttt{features/}, atoms y molecules compartidos, ViewModels MVVM
+puros.
+
+\subsubsection{Prompt 3 — CRUD completo con microservicio separado}
+\textit{``Construye el feature de Projects: tanto en el frontend como en
+el backend. Microservicio nuevo VisionPriceProjects con cliente +
+ubicación + presupuesto + workType + area + status. CRUD completo: Lista
++ Crear + Detalle + Editar + Eliminar. Mismo JWT secret entre los dos
+servicios''.}
+
+Resultado: \texttt{projects-service} en puerto 3001 que verifica los
+JWT emitidos por \texttt{auth-service}, y feature \texttt{projects} en
+Flutter con todas las pantallas.
+
+\subsubsection{Prompt 4 — Adaptación al diseño del prototipo}
+\textit{``Adapta lo que está al diseño del prototipo VisionPrice:
+Dashboard con header (fecha + saludo + avatar), KPIs ACTIVOS y EN
+COTIZACIÓN, lista de proyectos con thumbnail, ciudad, tiempo relativo y
+status chip; formulario Nuevo proyecto con 3 pasos numerados + grid 2x2
+de tipos de trabajo + city picker + banner de precios actualizados''.}
+
+Resultado: rediseño completo del Dashboard, AddProjectPage con pasos
+numerados, nuevos átomos (MetricCard, NumberedStepLabel,
+WorkTypeChoiceCard, CityPicker, PricesUpdateBanner).
+
+\subsubsection{Prompt 5 — Acceso rápido por biometría}
+\textit{``Implementa autenticación biométrica (Face ID / huella) siguiendo
+Clean Architecture. Las credenciales deben quedar guardadas de forma
+segura cuando el usuario active el acceso rápido, y solo deben cambiar
+cuando un usuario distinto inicie sesión y vuelva a activarlo. Para
+Google, evita que aparezca el picker después de la biometría''.}
+
+Resultado: dos nuevos ports en \texttt{domain}
+(\texttt{BiometricAuthenticator}, \texttt{CredentialsVault}), adapters
+con \texttt{flutter\_secure\_storage}, casos de uso y cascada
+\textit{refresh $\to$ silent Google $\to$ picker} en
+\texttt{loginWithBiometric}.
+
+\section{Resultados y Conclusiones}
+\label{sec:resultados}
+En esta sección se presentan los \textbf{resultados clave} y las
+\textbf{conclusiones} obtenidas tras el desarrollo.
+
+\begin{itemize}
+    \item \textbf{Resultado 1:} Se entregó una aplicación móvil
+    transaccional funcional con CRUD completo de proyectos sobre dos
+    microservicios REST y autenticación con email/password, Google y
+    biometría.
+    \item \textbf{Resultado 2:} Se aplicó de forma estricta
+    \textbf{Clean Architecture}, \textbf{Screaming Architecture},
+    \textbf{Vertical Slicing} y \textbf{MVVM}, manteniendo las capas
+    desacopladas (la capa de dominio no importa ningún framework).
+    \item \textbf{Resultado 3:} Se utilizó \textbf{Provider} en dos
+    niveles (módulos globales + ViewModel por página) y un \texttt{State}
+    inmutable con \texttt{copyWith}, eliminando bugs de mutación
+    accidental.
+    \item \textbf{Resultado 4:} Se construyó un \texttt{ApiClient}
+    reutilizable con los cuatro verbos REST (GET, POST, PATCH, DELETE)
+    y manejo centralizado de errores.
+    \item \textbf{Conclusión:} El costo en disciplina (más archivos,
+    más interfaces) que impone Clean Architecture se recupera con
+    creces al refactorizar: cambiar \texttt{google\_sign\_in} v6 a v7 o
+    reemplazar widgets que causaban bugs en Flutter 3.44 se redujo a
+    tocar \textbf{un solo archivo} en la capa \texttt{data} o
+    \texttt{presentation}, sin tocar el dominio.
+    \item \textbf{Aprendizaje:} Integrar dos microservicios con JWT
+    compartido, biometría con cascada inteligente y MVVM puro en
+    Flutter exige planificar las interfaces (ports) antes que los
+    frameworks. Cuando esa regla se respeta, el código es testeable,
+    mantenible y resiste cambios en las dependencias externas.
+\end{itemize}
+
+\clearpage % Salto de página para empezar los anexos
+
+\section{Anexos}
+\label{sec:anexos}
+Los anexos incluyen material complementario: el repositorio del
+proyecto, capturas adicionales y fragmentos de código relevantes.
+
+\subsection{Repositorio del proyecto en GitHub}
+\label{sec:repo}
+El código fuente completo de la aplicación (cliente Flutter y los dos
+microservicios backend) se encuentra publicado en el siguiente
+repositorio de GitHub:
+
+\begin{itemize}
+    \item \textbf{Repositorio:} \url{https://github.com/MiguelAngelGutierrezGomez/VisionPrice}
+    \item \textbf{Rama principal:} \texttt{main}
+    \item \textbf{Estructura del workspace:}
+\end{itemize}
+
+\begin{lstlisting}[language={}, caption={Layout del workspace en el repositorio}]
+VisionPrice/
+  VisionPriceAuth/      (auth-service: Node + TS + Fastify + Prisma)
+  VisionPriceProjects/  (projects-service)
+  VisionPrice/          (cliente Flutter)
+  reportes/             (este documento y sus imagenes)
+\end{lstlisting}
+
+\subsection{Capturas de pantalla adicionales}
+A continuación se muestra una captura adicional del flujo de
+autenticación con biometría (huella digital / Face ID) sobre el botón
+\textit{Acceso rápido} de la pantalla de Login.
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][6cm][c]{0.55\textwidth}{\centering \textit{Acceso rápido por biometría tras enrolamiento}}}
+    \caption{Captura del flujo de acceso rápido por biometría.}
+    \label{fig:biometric}
+\end{figure}
+
+\clearpage
+
+\subsection{Código fuente adicional}
+Para incluir código fuente de manera profesional y con estilo, se
+utiliza el entorno \texttt{lstlisting}. A continuación, dos fragmentos
+representativos: el \textit{composition root} del módulo de
+autenticación (DI manual) y la activación de \texttt{FLAG\_SECURE} en
+Android desde Kotlin.
+
+\begin{lstlisting}[language=Dart, caption={Composition root manual del feature Auth}]
+class AuthModule {
+  final AuthRepository repository;
+  final LoginWithPassword loginWithPasswordUseCase;
+  final LoginWithGoogle loginWithGoogleUseCase;
+  final LoginWithBiometric loginWithBiometricUseCase;
+
+  factory AuthModule.create({required ApiClient apiClient}) {
+    final remote = AuthRemoteDataSource(apiClient);
+    final storage = TokenStorage();
+    final google = GoogleSignInService();
+    final BiometricAuthenticator biometric = LocalAuthBiometricAdapter();
+    final CredentialsVault vault = CredentialsVaultImpl();
+    final AuthRepository repo = AuthRepositoryImpl(
+      remote: remote, storage: storage, google: google,
+      biometric: biometric, vault: vault,
+    );
+    return AuthModule._(
+      repository: repo,
+      loginWithPasswordUseCase: LoginWithPassword(repo),
+      loginWithGoogleUseCase: LoginWithGoogle(repo),
+      loginWithBiometricUseCase: LoginWithBiometric(repo),
+    );
+  }
+
+  LoginViewModel loginViewModelFactory() => LoginViewModel(
+    loginWithPassword: loginWithPasswordUseCase,
+    loginWithGoogle: loginWithGoogleUseCase,
+    loginWithBiometric: loginWithBiometricUseCase,
+  );
+}
+\end{lstlisting}
+
+\vspace{1cm}
+
+\begin{lstlisting}[language=Kotlin, caption={Activación de FLAG\_SECURE en MainActivity}]
+class MainActivity : FlutterFragmentActivity() {
+    private val CHANNEL = "visionprice/secure_screen"
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "enable" -> {
+                        window.setFlags(
+                            WindowManager.LayoutParams.FLAG_SECURE,
+                            WindowManager.LayoutParams.FLAG_SECURE
+                        )
+                        result.success(null)
+                    }
+                    "disable" -> {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+}
+\end{lstlisting}
+
+\end{document}
