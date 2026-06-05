@@ -40,7 +40,13 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    networks:
+      - visionprice
 
 volumes:
   mysql_data:
     name: visionprice_mysql_data
+
+networks:
+  visionprice:
+    name: visionprice

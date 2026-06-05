@@ -1,0 +1,81 @@
+services:
+  auth:
+    build:
+      context: ../../VisionPriceAuth
+      dockerfile: Dockerfile
+    image: visionprice/auth:latest
+    container_name: visionprice-auth
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Apuntamos al contenedor de MySQL por nombre de servicio. Funciona
+      # porque ambos comparten la red 'visionprice'.
+      DATABASE_URL: "mysql://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@visionprice-mysql:3306/${AUTH_DB_NAME}"
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+      GOOGLE_MOBILE_CLIENT_IDS: ${GOOGLE_MOBILE_CLIENT_IDS:-}
+      REFRESH_TOKEN_COOKIE: ${REFRESH_TOKEN_COOKIE:-false}
+    ports:
+      # Expuesto a internet en el puerto 3000. La Flutter app llegara a
+      # http://<IP-EC2>:3000. Recuerda abrir 3000 en el Security Group.
+      - "3000:3000"
+    command: >
+      sh -c "npx prisma migrate deploy --schema=src/infrastructure/database/prisma/schema.prisma
+             && node dist/main.js"
+    networks:
+      - visionprice
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  projects:
+    build:
+      context: ../../VisionPriceProjects
+      dockerfile: Dockerfile
+    image: visionprice/projects:latest
+    container_name: visionprice-projects
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: "mysql://${PROJECTS_DB_USER}:${PROJECTS_DB_PASSWORD}@visionprice-mysql:3306/${PROJECTS_DB_NAME}"
+      # MISMO secret que el de auth — los proyectos solo VERIFICAN el token,
+      # no lo emiten. Si rotas el secret, debes rotarlo en ambos a la vez.
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+    ports:
+      - "3001:3001"
+    command: >
+      sh -c "npx prisma migrate deploy --schema=src/infrastructure/database/prisma/schema.prisma
+             && node dist/main.js"
+    networks:
+      - visionprice
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  visionprice:
+    # External: este compose NO crea la red. La crea el stack ec2-db.
+    # Si arrancas servicios antes que la BD, vas a recibir un error explicito.
+    external: true
+    name: visionprice
