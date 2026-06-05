@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectStatus {
+  MEASURED    // tomado en campo, aún sin precios
+  QUOTED      // con presupuesto calculado
+  IN_PROGRESS // en obra
+  COMPLETED   // entregado / cerrado
+}
+
+enum WorkType {
+  FLOOR
+  WALL
+  CEILING
+  COMBINED
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  // The owner lives in auth-service. We store the userId only; no FK
+  // (cross-service FKs would couple the databases). Authorization is
+  // enforced at the application layer: a JWT signed by auth-service must
+  // accompany every request, and ownerId must match the JWT's `sub`.
+  ownerId     String        @db.VarChar(36)
+  name        String        @db.VarChar(200)
+  description String?       @db.Text
+  clientName  String?       @db.VarChar(160)
+  // The prototype renders a city chip; we keep the column generic so it
+  // can hold a full street address later if needed.
+  location    String?       @db.VarChar(255)
+  workType    WorkType
+  // Square meters of the surface, captured by the future scanner step.
+  area        Decimal?      @db.Decimal(10, 2)
+  totalBudget Decimal?      @db.Decimal(14, 2)
+  status      ProjectStatus @default(MEASURED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([ownerId])
+  @@index([ownerId, status])
+  @@map("projects")
+}

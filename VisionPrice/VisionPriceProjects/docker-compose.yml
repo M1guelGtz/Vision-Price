@@ -1,0 +1,43 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: projects-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: projects_db
+      MYSQL_USER: projects_user
+      MYSQL_PASSWORD: projects_password
+    ports:
+      # 3308 on host because 3306 is taken by Windows MySQL and 3307 by auth-mysql
+      - "3308:3306"
+    volumes:
+      - projects_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projects-service
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: "mysql://projects_user:projects_password@mysql:3306/projects_db"
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+    ports:
+      - "3001:3001"
+    command: >
+      sh -c "npx prisma migrate deploy --schema=src/infrastructure/database/prisma/schema.prisma
+             && node dist/main.js"
+
+volumes:
+  projects_mysql_data:
