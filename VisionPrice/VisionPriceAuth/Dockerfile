@@ -19,6 +19,12 @@ RUN npm run build
 # Prune dev dependencies for the production image
 RUN npm prune --omit=dev
 
+# Regenerar el Prisma Client DESPUES del prune: npm prune puede eliminar
+# node_modules/.prisma. El CLI de prisma sobrevive porque esta declarado en
+# `dependencies` (no en devDependencies), lo cual tambien permite ejecutar
+# `prisma migrate deploy` en el arranque del contenedor.
+RUN npx prisma generate --schema=src/infrastructure/database/prisma/schema.prisma
+
 # ---------- production ----------
 FROM node:20-bookworm-slim AS production
 ENV NODE_ENV=production

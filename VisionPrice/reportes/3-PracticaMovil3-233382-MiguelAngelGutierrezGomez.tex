@@ -1,0 +1,309 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage[table]{xcolor}
+\usepackage{listings}
+
+% --- ETIQUETA 'LISTING' A 'LISTADO' ---
+\addto{\captionsspanish}{\renewcommand{\lstlistingname}{Listado}}
+\addto{\captionsspanish}{\renewcommand{\lstlistlistingname}{Listado de Códigos}}
+
+% --- ESTILO DE CÓDIGO ---
+\definecolor{GrisClaro}{rgb}{0.95, 0.95, 0.95}
+
+\lstset{
+    backgroundcolor=\color{GrisClaro},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    framesep=5pt,
+    rulesepcolor=\color{black},
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black}\itshape,
+    stringstyle=\color{orange},
+    tabsize=2,
+}
+
+% Lenguajes que listings no trae nativamente
+\lstdefinelanguage{Kotlin}{
+    keywords={package, import, fun, override, val, var, when, class, return, super, private, public, internal, object, this, if, else, true, false, null, in, is, as, try, catch},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={String, Int, Boolean, Unit, Bundle, MethodChannel, FlutterFragmentActivity, FlutterEngine, WindowManager, Settings, Exception},
+    ndkeywordstyle=\color{purple}\bfseries,
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]',
+}
+
+\lstdefinelanguage{Dart}{
+    keywords={import, class, abstract, static, final, const, void, return, if, else, async, await, Future, bool, String, int, double, true, false, null, this, super, extends, new, try, catch, on, in, is, as, override, enum, switch, case, default},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={Widget, State, StatefulWidget, StatelessWidget, BuildContext, MaterialApp, MethodChannel, Platform, PlatformException, AlertDialog, PopScope, SystemNavigator, showDialog, kDebugMode, UsbDebuggingGuard, UsbDebuggingResult, UsbDebuggingStatus, IntegrityViewModel},
+    ndkeywordstyle=\color{purple}\bfseries,
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]',
+}
+
+% --- MÁRGENES ---
+\geometry{
+    a4paper,
+    total={170mm,257mm},
+    left=25mm,
+    right=25mm,
+    top=30mm,
+    bottom=30mm,
+}
+
+% --- ENCABEZADO Y PIE ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{\thepage}
+\lfoot{Seguridad de la Información / Miguel Ángel Gutiérrez Gómez}
+
+% --- DATOS DEL DOCUMENTO ---
+\newcommand{\nombreuniversidad}{Universidad Politécnica de Chiapas}
+\newcommand{\nombrecarrera}{Ingeniería en Software}
+\newcommand{\nombremateria}{Seguridad de la Información}
+\newcommand{\nombreprofesor}{MC. José Alonso Macías Montoya}
+\newcommand{\corte}{Corte 1}
+\newcommand{\actividad}{Práctica - Móvil 3 \\ Detección de Depuración USB \\ (Autoprotección en Tiempo de Ejecución / RASP)}
+\newcommand{\nombres}{Miguel Ángel Gutiérrez Gómez}
+\newcommand{\matricula}{233382}
+\newcommand{\fechaentrega}{\today}
+\newcommand{\ciudad}{Suchiapa, Chiapas}
+
+\begin{document}
+
+% --- PORTADA ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Huge\bfseries \nombreuniversidad \par}
+    \vspace{0.5cm}
+    {\Large \nombrecarrera \par}
+
+    \vspace{2cm}
+    \rule{\textwidth}{1.5pt}
+    \vspace{0.4cm}
+    {\Large\bfseries \actividad \par}
+    \vspace{0.4cm}
+    \rule{\textwidth}{1.5pt}
+
+    \vspace{3cm}
+
+    \begin{flushleft}
+        \centering
+        \textbf{Materia:} \nombremateria \\
+        \textbf{Profesor:} \nombreprofesor \\
+        \textbf{Corte:} \corte
+    \end{flushleft}
+
+    \vspace{0.5cm}
+
+    \begin{flushleft}
+        \centering
+        \textbf{Alumno:} \nombres \\
+        \textbf{Matrícula:} \matricula \\
+    \end{flushleft}
+
+    \vfill
+    \vspace{1cm}
+    \textbf{\ciudad, a \fechaentrega}
+\end{titlepage}
+
+\clearpage
+
+% =====================================================================
+\section{Introducción y Objetivo}
+\label{sec:intro}
+En el análisis dinámico e ingeniería inversa de aplicaciones móviles, una de
+las puertas de entrada más comunes para auditorías no autorizadas es el
+\textbf{puente de depuración de Android (ADB)} habilitado mediante la
+\textbf{Depuración USB}. Con ADB activo, un atacante puede instrumentar la app,
+inspeccionar su memoria, leer logs o conectar herramientas de hooking.
+
+Como medida de \textbf{Autoprotección en Tiempo de Ejecución (RASP)}, esta
+práctica integra a la aplicación \textbf{VisionPrice} (Flutter) un módulo que
+verifica, durante el arranque, si la Depuración USB está activa. Si lo está y
+la app \textit{no} corre en modo desarrollo, se congela la ejecución con un
+diálogo mandatorio que instruye al usuario a desactivar la opción y cierra la
+aplicación de forma limpia.
+
+% =====================================================================
+\section{Arquitectura de la Solución}
+\label{sec:arquitectura}
+La validación se realiza en el punto más temprano del ciclo de vida con
+interfaz: la pantalla \texttt{IntegrityGatePage} (la ruta inicial de la app).
+En su \texttt{initState}, mediante \texttt{addPostFrameCallback}, se dispara la
+verificación \textbf{antes} de que el usuario pueda alcanzar el Login o
+cualquier lógica de negocio. El flujo respeta el patrón MVVM del proyecto:
+
+\begin{itemize}\itemsep2pt
+    \item \textbf{Capa de plataforma} — \texttt{UsbDebuggingGuard}
+    (\texttt{core/platform/}): contiene la regla de negocio de seguridad,
+    aplica la excepción \texttt{kDebugMode} y habla con el canal nativo.
+    \item \textbf{Canal nativo} — \texttt{MethodChannel}
+    \texttt{visionprice/usb\_debugging} hacia \texttt{MainActivity.kt}, que
+    consulta \texttt{Settings.Global.ADB\_ENABLED}.
+    \item \textbf{ViewModel} — \texttt{IntegrityViewModel} expone
+    \texttt{checkUsbDebugging()} y mantiene la lógica fuera de la vista.
+    \item \textbf{Vista} — \texttt{IntegrityGatePage} decide, según el
+    resultado, mostrar el \texttt{AlertDialog} persistente o continuar.
+\end{itemize}
+
+El siguiente fragmento muestra la consulta nativa en Kotlin (Opción B):
+
+\begin{lstlisting}[language=Kotlin, caption={MainActivity.kt — lectura de ADB\_ENABLED}]
+"isUsbDebuggingEnabled" -> {
+    try {
+        val adbEnabled = Settings.Global.getInt(
+            contentResolver,
+            Settings.Global.ADB_ENABLED, 0
+        ) == 1
+        result.success(adbEnabled)
+    } catch (e: Exception) {
+        result.error("ADB_CHECK_FAILED", e.message, null)
+    }
+}
+\end{lstlisting}
+
+La excepción de entorno de desarrollo y el bloqueo persistente en Dart:
+
+\begin{lstlisting}[language=Dart, caption={Guard con excepción kDebugMode + diálogo no descartable}]
+// UsbDebuggingGuard.check()
+if (kDebugMode) {                 // produccion: la restriccion SI aplica
+  return const UsbDebuggingResult(UsbDebuggingStatus.skippedDebugMode);
+}
+final enabled = await _channel.invokeMethod<bool>('isUsbDebuggingEnabled');
+
+// IntegrityGatePage — dialogo mandatorio
+showDialog(
+  context: context,
+  barrierDismissible: false,            // no se cierra al tocar fuera
+  builder: (ctx) => PopScope(
+    canPop: false,                      // bloquea el boton "atras"
+    child: AlertDialog(
+      title: const Text('Acceso bloqueado por seguridad'),
+      content: const Text('Desactiva la Depuracion USB para continuar...'),
+      actions: [ ElevatedButton(
+        onPressed: () => SystemNavigator.pop(),  // cierre limpio
+        child: const Text('Entendido, cerrar aplicacion'),
+      )],
+    ),
+  ),
+);
+\end{lstlisting}
+
+% =====================================================================
+\section{Justificación del Método (Opción B: Código Nativo)}
+\label{sec:justificacion}
+Se eligió la \textbf{Opción B (MethodChannel hacia Kotlin)} en lugar de un
+plugin de la comunidad por las siguientes razones:
+
+\begin{enumerate}\itemsep2pt
+    \item \textbf{Fuente de verdad directa.} \texttt{Settings.Global.ADB\_ENABLED}
+    es el valor que el propio sistema operativo usa para reflejar el estado de
+    la Depuración USB. No se infiere de forma indirecta ni depende de
+    heurísticas de terceros.
+    \item \textbf{Menor superficie de cadena de suministro.} No se agrega
+    ninguna dependencia nueva a \texttt{pubspec.yaml}; menos paquetes externos
+    significan menos riesgo de abandono o de código malicioso aguas arriba.
+    \item \textbf{Control total} sobre el manejo de errores y sobre el valor
+    devuelto, además de reutilizar la infraestructura de \texttt{MethodChannel}
+    que la app ya empleaba para \texttt{FLAG\_SECURE}.
+\end{enumerate}
+
+% =====================================================================
+\section{Repositorio}
+\label{sec:repo}
+Código fuente completo (app Flutter + microservicios):
+\begin{center}
+\url{https://github.com/MiguelAngelGutierrezGomez/VisionPrice}
+\end{center}
+
+% =====================================================================
+\section{Capturas de Funcionamiento}
+\label{sec:capturas}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][5.5cm][c]{0.42\textwidth}{\centering \textit{App ejecutándose con normalidad (Depuración USB desactivada): verificación superada y acceso al Login.}}}
+    \caption{Entorno seguro: la app continúa al Login.}
+    \label{fig:ok}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][5.5cm][c]{0.42\textwidth}{\centering \textit{App bloqueada tras activar la Depuración USB: AlertDialog persistente que cierra la app al confirmar.}}}
+    \caption{Entorno inseguro: bloqueo mandatorio por Depuración USB.}
+    \label{fig:blocked}
+\end{figure}
+
+\noindent\textit{Nota:} para reproducir el bloqueo debe compilarse en modo
+release/profile (\texttt{flutter run --release}), ya que en modo debug la
+verificación se omite por diseño.
+
+\clearpage
+
+% =====================================================================
+\section{Análisis Crítico}
+\label{sec:analisis}
+\textbf{¿Es este método 100\% infalible contra un atacante avanzado con
+herramientas de hooking como Frida?}
+
+\textbf{No.} La técnica eleva la barrera frente a auditorías casuales, pero no
+es infalible. Un atacante con Frida (o Xposed/LSPosed) opera \textit{dentro}
+del proceso de la app y puede:
+
+\begin{itemize}\itemsep2pt
+    \item \textbf{Hookear el resultado.} Interceptar el método nativo o el
+    handler del \texttt{MethodChannel} y forzar que siempre devuelva
+    \texttt{false}, anulando la detección.
+    \item \textbf{Operar sin ADB.} Frida puede inyectarse vía
+    \texttt{frida-gadget} embebido o en un dispositivo \textit{rooteado}, sin
+    necesidad de tener la Depuración USB activa, por lo que la comprobación ni
+    siquiera se dispara.
+    \item \textbf{Parchear el binario.} Reescribir el \texttt{smali}/\,DEX para
+    saltar la rama de bloqueo.
+\end{itemize}
+
+\textbf{Capas adicionales que añadiría} (defensa en profundidad):
+\begin{enumerate}\itemsep2pt
+    \item \textbf{Detección de root y de Frida}: buscar \texttt{su}, binarios y
+    paquetes de Magisk, el puerto/named-pipe por defecto de \texttt{frida-server}
+    y bibliotecas \texttt{frida-gadget} cargadas en memoria.
+    \item \textbf{Anti-debugging nativo} en C/C++ (NDK):
+    \texttt{ptrace(PTRACE\_TRACEME)} y lectura de \texttt{TracerPid} en
+    \texttt{/proc/self/status} para detectar depuradores adjuntos.
+    \item \textbf{Integridad de la app}: verificación de la firma APK y
+    detección de re-empaquetado/parcheo.
+    \item \textbf{Validación del lado servidor + ofuscación}: que la lógica
+    crítica y las reglas de negocio vivan en el backend (no en el cliente,
+    siempre manipulable), \textbf{attestation} con Google Play Integrity API, y
+    ofuscación del código (R8/ProGuard) para encarecer la ingeniería inversa.
+\end{enumerate}
+
+\noindent\textbf{Conclusión:} ninguna defensa del lado cliente es absoluta. El
+valor de RASP no es la imposibilidad, sino \textbf{aumentar el costo y el
+tiempo} del atacante; la verdadera robustez surge de combinar varias capas y de
+no confiar nunca en el dispositivo como entorno seguro.
+
+\end{document}

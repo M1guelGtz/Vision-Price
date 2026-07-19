@@ -17,7 +17,9 @@ export class Money {
         'totalBudget must be a positive decimal with up to 2 digits',
       );
     }
-    const [whole, frac = ''] = normalized.split('.');
+    // El default de `whole` es inalcanzable (el regex de arriba ya exige \d+),
+    // pero mantiene el tipo como string bajo noUncheckedIndexedAccess.
+    const [whole = '0', frac = ''] = normalized.split('.');
     const cents = Number.parseInt(whole, 10) * 100 + Number.parseInt(frac.padEnd(2, '0'), 10);
     if (!Number.isSafeInteger(cents)) {
       throw new ValidationError('totalBudget is out of range');
