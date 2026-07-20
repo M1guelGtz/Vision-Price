@@ -99,6 +99,8 @@ async function bootstrap(): Promise<void> {
   process.on('SIGTERM', shutdown);
 
   try {
+    // El healthcheck de Railway sondea por IPv4, por lo que el bind debe ser
+    // '0.0.0.0' (todas las interfaces IPv4) y no '::'.
     await app.listen({ port: env.PORT, host: '0.0.0.0' });
     app.log.info(`auth-service listening on :${env.PORT}`);
   } catch (err) {

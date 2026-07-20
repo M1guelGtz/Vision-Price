@@ -1,0 +1,502 @@
+\documentclass[12pt, a4paper]{article} % Clase de documento: 'article' es estándar para trabajos cortos. 12pt es el tamaño de letra. A4 es el formato de papel.
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc} % Para la codificación de caracteres, esencial para acentos y eñes
+\usepackage[T1]{fontenc}    % Fuente moderna para PDFs
+\usepackage[spanish]{babel} % Soporte para idioma español (guionización, fechas, etc.)
+\usepackage{amsmath}        % Para matemáticas avanzadas (si fuera necesario)
+\usepackage{graphicx}       % Para insertar imágenes
+\usepackage{booktabs}       % Mejora el aspecto de las tablas (líneas más profesionales)
+\usepackage{geometry}       % Para configurar los márgenes
+\usepackage{hyperref}       % Para crear enlaces en el índice y referencias (¡muy recomendado!)
+\usepackage{fancyhdr}       % Para personalizar encabezados y pies de página (opcional)
+\usepackage[spanish]{babel}
+% ¡Asegúrate de que xcolor esté aquí!
+\usepackage[table]{xcolor} % 'table' es útil para compatibilidad con listings/tablas
+\usepackage{listings}       % Paquete para el formato de código fuente
+% --- MODIFICACIÓN DE LA ETIQUETA 'LISTING' A 'LISTADO' ---
+\addto{\captionsspanish}{\renewcommand{\lstlistingname}{Listado}}
+\addto{\captionsspanish}{\renewcommand{\lstlistlistingname}{Listado de Códigos}}
+% --- DEFINICIÓN DE COLOR GRIS Y ESTILO DE CÓDIGO ---
+
+% Definimos un color gris claro para el fondo (usando el modelo RGB)
+% Los valores entre 0 y 1. (0.95, 0.95, 0.95 es un gris muy claro)
+\definecolor{GrisClaro}{rgb}{0.95, 0.95, 0.95}
+
+% Configuramos el estilo por defecto para todos los bloques de código (lstlisting)
+\lstset{
+    language=TeX, % Lenguaje por defecto (puedes cambiarlo, ej: Python, C, Java)
+    backgroundcolor=\color{GrisClaro}, % Fondo gris claro
+    basicstyle=\ttfamily\small,      % Tipo de fuente: typewriter (\ttfamily) y pequeño (\small)
+    breaklines=true,                 % Permite saltos de línea largos
+    showstringspaces=false,          % No mostrar espacios como caracteres
+    numbers=left,                    % Numeración de líneas a la izquierda
+    numberstyle=\tiny\color{gray},   % Estilo del número de línea
+    frame=single,                    % Dibuja un marco alrededor del código
+    framesep=5pt,                    % Espacio entre el marco y el código
+    rulesepcolor=\color{black},      % Color de las líneas del marco
+    keywordstyle=\color{blue}\bfseries, % Palabras clave en azul y negrita
+    commentstyle=\color{green!60!black}\itshape, % Comentarios en verde oscuro y cursiva
+    stringstyle=\color{orange},      % Cadenas de texto en naranja
+}
+
+% --- LENGUAJES PERSONALIZADOS PARA listings (Dart, JavaScript) ---
+\lstdefinelanguage{Dart}{
+    keywords={import, class, abstract, static, final, const, void, return, if, else, async, await, Future, bool, String, int, double, true, false, null, this, super, extends, new, try, catch, on, in, is, as, override, enum, switch, case, default, late, factory, required, rethrow},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={SecurityContext, HttpClient, IOClient, X509Certificate, HandshakeException, ApiClient, CertificatePinning, Uint8List, debugPrint, utf8},
+    ndkeywordstyle=\color{purple}\bfseries,
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]',
+}
+
+\lstdefinelanguage{JavaScript}{
+    keywords={var, let, const, function, return, if, else, try, catch, new, this, typeof, null, true, false},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={Java, Interceptor, Module, console, send, implementation, attach, findExportByName},
+    ndkeywordstyle=\color{purple}\bfseries,
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]',
+}
+
+% --- CONFIGURACIÓN DE MARGENES ---
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=25mm,
+ right=25mm,
+ top=30mm,
+ bottom=30mm,
+ }
+
+% --- CONFIGURACIÓN DE ENCABEZADOS Y PIES (OPCIONAL) ---
+\pagestyle{fancy}
+\fancyhf{} % Limpiar encabezados y pies
+\renewcommand{\headrulewidth}{0pt} % Eliminar línea en el encabezado
+\rfoot{\thepage} % Número de página a la derecha en el pie
+\lfoot{ Seguridad de la Información / Miguel Ángel Gutiérrez Gómez} % Texto en el pie de página izquierdo
+
+% --- DATOS DEL DOCUMENTO (PARA LA PORTADA) ---
+\newcommand{\nombreuniversidad}{Universidad Politécnica de Chiapas}
+\newcommand{\nombrecarrera}{Ingeniería en Software}
+\newcommand{\nombremateria}{Seguridad de la Información}
+\newcommand{\nombreprofesor}{MC. José Alonso Macías Montoya}
+\newcommand{\corte}{Corte 1}
+\newcommand{\actividad}{Práctica - Móvil 4 \\ Certificate Pinning (Anclaje de Certificado) \\ Mitigación de ataques Man-in-the-Middle}
+\newcommand{\nombres}{Miguel Ángel Gutiérrez Gómez}
+\newcommand{\matricula}{233382}
+\newcommand{\fechaentrega}{\today} % \today inserta la fecha actual automáticamente
+\newcommand{\ciudad}{Suchiapa, Chiapas}
+
+\usepackage[utf8]{inputenc} % ¡ESTA LÍNEA ES FUNDAMENTAL!
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+% --- INICIO DEL DOCUMENTO ---
+\begin{document}
+
+% --- PORTADA ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm} % Espacio vertical
+    {\Huge\bfseries \nombreuniversidad \par} % Título principal: Nombre de la Universidad
+    \vspace{0.5cm}
+    {\Large \nombrecarrera \par} % Nombre de la Carrera
+
+    \vspace{2cm}
+    \rule{\textwidth}{1.5pt} % Línea gruesa
+    \vspace{0.4cm}
+    {\Large\bfseries \actividad \par} % Título del Trabajo
+    \vspace{0.4cm}
+    \rule{\textwidth}{1.5pt} % Línea gruesa
+
+    \vspace{3cm}
+
+    % --- DATOS DEL ALUMNO Y CURSO (EN UNA SOLA COLUMNA) ---
+    % Se eliminaron los entornos minipage y \hfill
+    \begin{flushleft}
+        \centering % Centra las líneas dentro del entorno flushleft
+        \textbf{Materia:} \nombremateria \\
+        \textbf{Profesor:} \nombreprofesor \\
+        \textbf{Corte:} \corte
+    \end{flushleft}
+
+    \vspace{0.5cm} % Pequeño espacio de separación
+
+    \begin{flushleft}
+        \centering % Centra las líneas dentro del entorno flushleft
+        \textbf{Alumno:} \nombres \\
+        \textbf{Matrícula:} \matricula \\
+    \end{flushleft}
+    % --- FIN DE DATOS EN UNA SOLA COLUMNA ---
+
+    \vfill % Empuja el contenido restante al final de la página
+
+    % Fecha y Ciudad
+    \vspace{1cm}
+    \textbf{\ciudad, a \fechaentrega}
+
+\end{titlepage}
+
+\clearpage % Salto de página para empezar el contenido
+
+% --- ÍNDICE/TABLA DE CONTENIDO ---
+\tableofcontents
+\clearpage
+
+% --- CUERPO DEL TRABAJO ---
+
+\section{Introducción}
+\label{sec:introduccion}
+El protocolo HTTPS garantiza que el tráfico entre una aplicación móvil y su
+servidor viaje cifrado, pero por sí solo \textbf{no garantiza con quién se
+está hablando realmente}. La validación TLS estándar acepta como legítimo
+cualquier certificado firmado por alguna de las más de 150 Autoridades
+Certificadoras (CA) que el sistema operativo considera de confianza. Basta con
+que un atacante logre instalar su propia CA en el dispositivo —algo trivial en
+un teléfono que el usuario controla, y que hacen por diseño herramientas como
+\textbf{mitmproxy}, \textbf{Burp Suite} o \textbf{Charles Proxy}— para que
+pueda descifrar, leer y modificar todo el tráfico sin que la app lo note. Es el
+clásico ataque \textit{Man-in-the-Middle} (MITM).
+
+El \textbf{Certificate Pinning} (anclaje de certificado) mitiga este riesgo
+invirtiendo la lógica de confianza: en lugar de aceptar a cualquier CA del
+sistema, la aplicación lleva embebido el certificado (o su clave pública) del
+servidor con el que espera hablar, y \textbf{rechaza la conexión si el
+certificado presentado no coincide}.
+
+El objetivo de esta práctica es integrar certificate pinning en la aplicación
+\textbf{VisionPrice} (Flutter), que consume una API REST desplegada en Railway
+sobre HTTPS, y demostrar empíricamente que la app deja de ser interceptable.
+
+\section{Recursos Utilizados}
+\label{sec:recursos}
+En esta sección se listan las herramientas y servicios fundamentales para la
+realización de la actividad.
+
+\begin{itemize}
+    \item \textbf{Cliente móvil:} Flutter 3.44 / Dart 3.12, paquete
+    \texttt{http} y la clase \texttt{SecurityContext} de \texttt{dart:io}.
+    \item \textbf{Backend:} microservicio \texttt{auth-service}
+    (Node.js + Fastify + Prisma) desplegado en \textbf{Railway} con HTTPS y
+    certificado emitido por Let's Encrypt.
+    \item \textbf{Análisis de certificados:} \texttt{openssl s\_client} para
+    extraer la cadena de certificación y calcular las huellas SPKI.
+    \item \textbf{Interceptación (verificación):} \textbf{mitmproxy} como
+    proxy MITM de prueba.
+    \item \textbf{Otros:} Android Studio, VS Code, Git, Overleaf y compilador
+    \LaTeX{}.
+\end{itemize}
+
+\section{Desarrollo}
+\label{sec:desarrollo}
+Esta es la parte central del trabajo. Se presentan el análisis previo, la
+justificación de la estrategia elegida, la implementación y su verificación.
+
+\subsection{Análisis de la cadena de certificación}
+\label{sec:cadena}
+El primer paso fue conocer exactamente qué certificado presenta el servidor.
+Se consultó con \texttt{openssl}:
+
+\begin{lstlisting}[language=bash, caption={Extracción de la cadena de certificación}]
+openssl s_client -connect vsauth-production.up.railway.app:443 \
+    -servername vsauth-production.up.railway.app -showcerts
+\end{lstlisting}
+
+La cadena obtenida consta de cuatro certificados. Para cada uno se calculó la
+huella SHA-256 de su clave pública (\textbf{SPKI}), que es el identificador
+estándar recomendado para anclar:
+
+\begin{table}[h]
+    \centering
+    \caption{Cadena de certificación y huellas SPKI obtenidas}
+    \label{tab:cadena}
+    \begin{tabular}{clp{5.2cm}}
+        \toprule
+        \textbf{Nivel} & \textbf{Sujeto} & \textbf{SPKI (SHA-256, base64)} \\
+        \midrule
+        0 (hoja)  & \texttt{*.up.railway.app}   & \texttt{\scriptsize hORJtOUv6S5sVpxykVdj7ceRoUfeLhICfOGA0n68co0=} \\
+        1 (inter.)& \texttt{Let's Encrypt YE1}  & \texttt{\scriptsize brzvtCELCIZUo4sD/qPX0ccRtPsd3DY6RfmxpOU9oB4=} \\
+        2 (raíz)  & \texttt{ISRG Root YE}       & \texttt{\scriptsize sCkq5UWXjg+7mKu9lMhhYF5bGLsy7VI/UNW3tccdR7w=} \\
+        3 (raíz)  & \texttt{ISRG Root X2}       & \texttt{\scriptsize diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=} \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.5em}
+    \footnotesize Nota: datos reales obtenidos del servidor de producción.
+\end{table}
+
+\subsection{Justificación: qué nivel de la cadena anclar}
+\label{sec:justificacion}
+Ésta es la decisión de diseño más importante de la práctica, y la que
+determina si la aplicación seguirá funcionando dentro de tres meses.
+
+El certificado hoja es un \textbf{comodín} (\texttt{*.up.railway.app}) que
+\textbf{pertenece a Railway, no al desarrollador}. Let's Encrypt emite
+certificados con una validez máxima de 90 días, y Railway los rota sin previo
+aviso. Se evaluaron tres alternativas:
+
+\begin{enumerate}
+    \item \textbf{Anclar el certificado hoja.} Máxima seguridad, pero la
+    aplicación \textbf{dejaría de funcionar por sí sola} en cuanto Railway
+    renovara el certificado. Sería necesario publicar una nueva versión en la
+    tienda cada pocas semanas: inviable.
+    \item \textbf{Anclar el intermedio (Let's Encrypt YE1).} Sobrevive a la
+    rotación del certificado hoja. Su validez alcanza hasta septiembre de 2028.
+    \item \textbf{Anclar la raíz (ISRG Root X2).} La opción más duradera
+    (válida hasta 2032) pero también la más permisiva.
+\end{enumerate}
+
+\textbf{Se optó por una estrategia de anclas redundantes}: se embebieron
+simultáneamente el \textbf{intermedio} y la \textbf{raíz}. Así, si Let's
+Encrypt rotara el intermedio antes de 2028, el ancla de la raíz mantendría la
+aplicación operativa. Esta técnica de \textit{pines de respaldo} es la práctica
+estándar de la industria.
+
+\textbf{Limitación asumida conscientemente:} un atacante que consiguiera que
+Let's Encrypt le emitiera un certificado válido \textbf{para ese mismo dominio}
+superaría el filtro. Sin embargo, eso exige comprometer el control del dominio,
+lo que representa un ataque de un orden de magnitud muy superior al de
+simplemente instalar una CA en el teléfono.
+
+\subsection{Arquitectura de la solución}
+\label{sec:arquitectura}
+La aplicación sigue \textbf{Clean Architecture}, y su clase \texttt{ApiClient}
+ya recibía el cliente HTTP por \textbf{inyección de dependencias}:
+
+\begin{lstlisting}[language=Dart, caption={ApiClient: el cliente HTTP era ya inyectable}]
+ApiClient({
+  http.Client? client,
+  required String baseUrl,
+}) : _client = client ?? http.Client(), ...
+\end{lstlisting}
+
+Gracias a ese diseño previo, activar el anclaje se resolvió \textbf{creando un
+único archivo nuevo} (\texttt{core/network/certificate\_pinning.dart}) y
+modificando \textbf{tres líneas} del \textit{composition root}. No se tocó
+ningún \textit{data source}, repositorio, caso de uso ni ViewModel: el cambio
+quedó totalmente contenido en la capa de infraestructura de red.
+
+\subsection{Implementación}
+\label{sec:implementacion}
+El mecanismo central es construir un \texttt{SecurityContext} con
+\texttt{withTrustedRoots: false}, lo que \textbf{descarta por completo el
+almacén de CAs del sistema operativo}, e inyectarle únicamente los
+certificados aprobados.
+
+\begin{lstlisting}[language=Dart, caption={Construcción del cliente HTTP anclado}]
+static http.Client createClient() {
+  if (!kEnabled) return http.Client();
+
+  // withTrustedRoots: false descarta el almacen de CAs del sistema.
+  final context = SecurityContext(withTrustedRoots: false);
+  context.setTrustedCertificatesBytes(
+    utf8.encode('$_letsEncryptYe1\n$_isrgRootX2'),
+  );
+
+  final ioClient = HttpClient(context: context)
+    // NUNCA devolver true aqui: eso anularia por completo el anclaje.
+    ..badCertificateCallback = (X509Certificate cert, String host, int port) {
+      debugPrint('Pinning: certificado RECHAZADO para $host:$port');
+      return false;
+    }
+    ..connectionTimeout = const Duration(seconds: 15);
+
+  return IOClient(ioClient);
+}
+\end{lstlisting}
+
+Y su conexión en el \textit{composition root}:
+
+\begin{lstlisting}[language=Dart, caption={Inyección del cliente anclado en ambos ApiClient}]
+final pinnedClient = CertificatePinning.createClient();
+_authApiClient = ApiClient(client: pinnedClient, baseUrl: ApiConfig.baseUrl);
+_projectsApiClient =
+    ApiClient(client: pinnedClient, baseUrl: ApiConfig.projectsBaseUrl);
+\end{lstlisting}
+
+\subsubsection{El error más común al implementar pinning}
+Numerosos tutoriales implementan el anclaje devolviendo \texttt{true} desde
+\texttt{badCertificateCallback}. Eso \textbf{elimina toda la seguridad}: ese
+callback solo se invoca cuando la validación \textit{ya falló}, de modo que
+devolver \texttt{true} equivale a aceptar cualquier certificado, incluido el
+del atacante. En esta implementación devuelve siempre \texttt{false} y se
+utiliza únicamente para registrar el rechazo.
+
+\subsection{Verificación empírica}
+\label{sec:verificacion}
+Para comprobar que el anclaje funciona se ejecutó un programa Dart que realiza
+la misma petición con dos clientes distintos: uno anclado y uno normal.
+
+\begin{table}[h]
+    \centering
+    \caption{Resultados de la verificación del anclaje}
+    \label{tab:resultados}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Cliente} & \textbf{Servidor propio (Railway)} & \textbf{Dominio con otra CA} \\
+        \midrule
+        Con pinning        & Permitido (200 OK) & \textbf{Bloqueado} \\
+        Sin pinning (control) & Permitido (200 OK) & Permitido \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.5em}
+    \footnotesize Nota: el bloqueo se produce con \texttt{HandshakeException}.
+\end{table}
+
+El detalle relevante es \textbf{en qué momento} falla la conexión: la excepción
+es \texttt{HandshakeException}, es decir, la conexión se aborta durante la
+negociación TLS, \textbf{antes de transmitir un solo byte de datos de
+aplicación}. Ninguna credencial ni token llega jamás al interceptor.
+
+\subsection{Capturas de funcionamiento}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][5.5cm][c]{0.62\textwidth}{\centering \textit{mitmproxy interceptando el tráfico con el anclaje DESACTIVADO: se observan en claro las peticiones de login y de proyectos.}}}
+    \caption{Sin pinning: el tráfico es legible por el proxy.}
+    \label{fig:sinpinning}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \fbox{\parbox[c][5.5cm][c]{0.62\textwidth}{\centering \textit{Con el anclaje ACTIVADO: mitmproxy registra el handshake abortado por el cliente y la app no logra conectar.}}}
+    \caption{Con pinning: el handshake TLS es rechazado.}
+    \label{fig:conpinning}
+\end{figure}
+
+\section{Resultados y Conclusiones}
+\label{sec:resultados}
+En esta sección se presentan los \textbf{resultados clave} derivados del
+desarrollo, seguidos por las \textbf{conclusiones}.
+
+\begin{itemize}
+    \item \textbf{Resultado 1:} Se integró certificate pinning en VisionPrice
+    verificando la cadena contra dos anclas embebidas, sin depender del
+    almacén de CAs del sistema operativo.
+    \item \textbf{Resultado 2:} Se comprobó empíricamente que un dominio
+    servido por una CA distinta es rechazado con \texttt{HandshakeException},
+    mientras que el servidor legítimo sigue respondiendo con normalidad.
+    \item \textbf{Resultado 3:} El cambio quedó contenido en un archivo nuevo
+    y tres líneas del \textit{composition root}, evidenciando el beneficio
+    práctico de haber aplicado inyección de dependencias en la capa de red.
+    \item \textbf{Conclusión 1:} HTTPS por sí solo protege la
+    \textit{confidencialidad} del canal, pero no la \textit{identidad} del
+    interlocutor cuando el atacante controla el dispositivo. El pinning es la
+    capa que cierra esa brecha.
+    \item \textbf{Conclusión 2:} La seguridad y la mantenibilidad están en
+    tensión directa. Anclar el certificado hoja es lo más seguro y lo menos
+    sostenible; elegir el nivel adecuado de la cadena es una decisión de
+    ingeniería, no una receta única.
+\end{itemize}
+
+\clearpage % Salto de página para empezar los anexos
+
+\section{Anexos}
+\label{sec:anexos}
+Los anexos incluyen material complementario que respalda el cuerpo principal
+del trabajo.
+
+\subsection{Repositorio del proyecto}
+El código fuente completo (aplicación Flutter y microservicios) se encuentra en:
+\begin{center}
+\url{https://github.com/MiguelAngelGutierrezGomez/VisionPrice}
+\end{center}
+
+\subsection{Análisis Crítico: ¿es infalible frente a Frida?}
+\label{sec:analisis}
+\textbf{No.} El certificate pinning es una defensa \textbf{del lado del
+cliente}, y todo lo que se ejecuta en un dispositivo bajo control del atacante
+es, en última instancia, modificable. Un atacante con \textbf{Frida} opera
+\textit{dentro} del proceso de la aplicación y dispone de varias vías:
+
+\begin{itemize}
+    \item \textbf{Hookear el callback de validación.} Interceptar
+    \texttt{badCertificateCallback} y forzar que devuelva \texttt{true}. Son
+    pocas líneas de JavaScript.
+    \item \textbf{Neutralizar la verificación en BoringSSL.} Flutter no usa
+    la pila TLS de Android, sino BoringSSL compilada dentro de
+    \texttt{libflutter.so}. Existen scripts públicos que localizan por patrón
+    la función \texttt{ssl\_crypto\_x509\_session\_verify\_cert\_chain} y la
+    parchean en memoria para que siempre apruebe.
+    \item \textbf{Reemplazar los certificados embebidos.} Extraer el APK,
+    sustituir los PEM anclados por el de su propia CA y re-empaquetar.
+\end{itemize}
+
+\begin{lstlisting}[language=JavaScript, caption={Concepto de un bypass con Frida (ilustrativo)}]
+// Localiza la verificacion de cadena dentro de libflutter.so y la
+// reemplaza por una funcion que siempre devuelve "valido".
+Interceptor.replace(direccionDeLaFuncion, new NativeCallback(function () {
+    return 1; // 1 = certificado aceptado
+}, 'int', ['pointer', 'pointer', 'pointer']));
+\end{lstlisting}
+
+\subsubsection{Capas adicionales que se añadirían}
+\begin{enumerate}
+    \item \textbf{Detección de instrumentación:} búsqueda de
+    \texttt{frida-server} (puertos y \textit{named pipes} por defecto), de
+    bibliotecas \texttt{frida-gadget} cargadas en memoria y de indicios de
+    \textit{root} (binario \texttt{su}, paquetes de Magisk).
+    \item \textbf{Anti-debugging nativo (NDK):}
+    \texttt{ptrace(PTRACE\_TRACEME)} y lectura de \texttt{TracerPid} en
+    \texttt{/proc/self/status} para detectar depuradores adjuntos.
+    \item \textbf{Verificación de integridad:} comprobación de la firma del
+    APK en tiempo de ejecución para detectar re-empaquetado, y
+    \textbf{Play Integrity API} como atestación respaldada por Google.
+    \item \textbf{Defensa del lado servidor:} \textbf{ésta es la capa
+    decisiva}. Toda regla de negocio crítica debe validarse en el backend,
+    junto con detección de anomalías y rotación de tokens. El servidor es el
+    único entorno que el atacante no controla.
+\end{enumerate}
+
+\subsubsection{Conclusión del análisis}
+El valor del pinning no reside en ser inviolable, sino en \textbf{elevar
+sustancialmente el costo del ataque}: sin él, interceptar la aplicación
+requiere instalar un proxy y una CA, algo que puede hacer cualquier persona
+siguiendo un tutorial; con él, se necesita un dispositivo \textit{rooteado},
+conocimientos de instrumentación dinámica y de ingeniería inversa de binarios
+nativos. Esa diferencia elimina a la inmensa mayoría de los atacantes
+oportunistas. La regla permanente es \textbf{no confiar jamás en el
+dispositivo} como entorno de ejecución seguro.
+
+\subsection{Código Fuente Adicional}
+A continuación, el bloque completo de anclas embebidas y el comando empleado
+para regenerarlas cuando la cadena del servidor cambie.
+
+\begin{lstlisting}[language=bash, caption={Comando para recalcular la huella SPKI de un certificado}]
+openssl x509 -in cert.pem -pubkey -noout \
+  | openssl pkey -pubin -outform der \
+  | openssl dgst -sha256 -binary \
+  | openssl enc -base64
+\end{lstlisting}
+
+\begin{lstlisting}[language=Dart, caption={Interruptor maestro y anclas embebidas (extracto)}]
+class CertificatePinning {
+  /// Interruptor maestro. En `false` desactiva el anclaje para poder
+  /// inspeccionar el trafico con un proxy durante una demostracion.
+  static const bool kEnabled = true;
+
+  /// Intermedio: Let's Encrypt YE1 (valido 2025-09-03 -> 2028-09-02).
+  static const String _letsEncryptYe1 = '''
+-----BEGIN CERTIFICATE-----
+MIICizCCAhGgAwIBAgIQXd1w3TH4AchcGGp6BLgK/jAKBggqhkjOPQQDAzAuMQsw
+... (contenido completo en el repositorio) ...
+-----END CERTIFICATE-----
+''';
+
+  /// Raiz: ISRG Root X2 (valida 2026-05-13 -> 2032-09-02). Ancla de
+  /// respaldo por si Let's Encrypt rota el intermedio antes de 2028.
+  static const String _isrgRootX2 = '''
+-----BEGIN CERTIFICATE-----
+MIIEcDCCAligAwIBAgIQbI8dxyfHEX97r4U6yYD5zTANBgkqhkiG9w0BAQsFADBP
+... (contenido completo en el repositorio) ...
+-----END CERTIFICATE-----
+''';
+}
+\end{lstlisting}
+
+\end{document}

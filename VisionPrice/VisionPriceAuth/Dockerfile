@@ -41,7 +41,13 @@ COPY --from=builder --chown=nodeapp:nodeapp /app/dist ./dist
 COPY --from=builder --chown=nodeapp:nodeapp /app/package.json ./package.json
 COPY --from=builder --chown=nodeapp:nodeapp /app/src/infrastructure/database/prisma ./src/infrastructure/database/prisma
 
+# Entrypoint: migraciones + arranque del servidor.
+COPY --chown=nodeapp:nodeapp docker-entrypoint.sh ./docker-entrypoint.sh
+# `sed` elimina los CR de Windows (CRLF). Sin esto el shebang falla en Linux
+# con "no such file or directory", un error muy dificil de diagnosticar.
+RUN sed -i 's/\r$//' ./docker-entrypoint.sh && chmod +x ./docker-entrypoint.sh
+
 USER nodeapp
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["./docker-entrypoint.sh"]
